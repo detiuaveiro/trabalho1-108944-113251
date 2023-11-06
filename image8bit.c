@@ -10,11 +10,11 @@
 /// 2013, 2023
 
 // Student authors (fill in below):
-// NMec:  Name:
+// NMec:113251  Name: João Ferreira
 // 
 // 
 // 
-// Date:
+// Date: 06/11/2023
 //
 
 #include "image8bit.h"
@@ -167,11 +167,28 @@ void ImageInit(void) { ///
 /// On success, a new image is returned.
 /// (The caller is responsible for destroying the returned image!)
 /// On failure, returns NULL and errno/errCause are set accordingly.
-Image ImageCreate(int width, int height, uint8 maxval) { ///
+
+Image ImageCreate(int width, int height, uint8 maxval) {   //---------------- Função escrita dia 6/11/2023 por João Ferreira
   assert (width >= 0);
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
-  // Insert your code here!
+  Image image = (Image)malloc(sizeof(Image));  //Aloca memória para a imagem
+  if (image == NULL){                          // Se a alocação de memória para a imagem falhar    
+    printf("ERRO: A imagem não existe");       // é impressa uma mensagem de erro
+    ImageErrMsg();                             //
+    return image;                              // e devolvido o valor NULL
+  }                                            
+
+  image->width = width;                        //  
+  image->height = height;                      // Atribui width, height e maxval à estrutura da imagem
+  image->maxval = maxval;                      //
+
+  image->pixel=(uint8*)malloc(sizeof(uint8)*height*width);    //Aloca memória para os pixeis da imagem
+  for (int i = 0; i < width*height; i++){                     //
+    image->pixel[i] = 0;                                      //Inicializa todos os pixeis da imagem para a cor preto (0)
+  }
+                                                              
+  return image;                                               
 }
 
 /// Destroy the image pointed to by (*imgp).
@@ -179,10 +196,13 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 /// If (*imgp)==NULL, no operation is performed.
 /// Ensures: (*imgp)==NULL.
 /// Should never fail, and should preserve global errno/errCause.
-void ImageDestroy(Image* imgp) { ///
+void ImageDestroy(Image* imgp) {
   assert (imgp != NULL);
   // Insert your code here!
-}
+
+  Image *img;
+  img = *imgp;
+  free((*img));
 
 
 /// PGM file operations
