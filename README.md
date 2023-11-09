@@ -75,3 +75,4 @@ git remote add upstream git@github.com:detiuaveiro/image8bit-pub.git
 git fetch upstream
 git rebase upstream/main
 ```
+oi sou a bia
