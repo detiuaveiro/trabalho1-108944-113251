@@ -11,7 +11,7 @@
 
 // Student authors (fill in below):
 // NMec:113251  Name: João Ferreira
-// 
+// NMec:108944  Name: Beatriz Saraiva
 // 
 // 
 // Date: 06/11/2023
@@ -196,14 +196,14 @@ Image ImageCreate(int width, int height, uint8 maxval) {   //---------------- Fu
 /// If (*imgp)==NULL, no operation is performed.
 /// Ensures: (*imgp)==NULL.
 /// Should never fail, and should preserve global errno/errCause.
-void ImageDestroy(Image* imgp) {
-  assert (imgp != NULL);
-  // Insert your code here!
-
-  Image *img;
-  img = *imgp;
-  free((*img));
-
+void ImageDestroy(Image* image) {
+  assert (image != NULL);
+  if (*image != NULL){  
+    free((*image)->pixel);        //Liberta a memória alocada para os pixeis
+    free(*image);                 //Liberta a memória alocada para a imagem
+    *image = NULL;                //Define o ponteiro para NULL
+  }
+}
 
 /// PGM file operations
 
