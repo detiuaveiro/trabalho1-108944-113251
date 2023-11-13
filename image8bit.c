@@ -168,27 +168,27 @@ void ImageInit(void) { ///
 /// (The caller is responsible for destroying the returned image!)
 /// On failure, returns NULL and errno/errCause are set accordingly.
 
-Image ImageCreate(int width, int height, uint8 maxval) {   //---------------- Função escrita dia 6/11/2023 por João Ferreira
+Image ImageCreate(int width, int height, uint8 maxval) {   //---------------- Função escrita dia 6/11/2023
   assert (width >= 0);
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
-  Image image = (Image)malloc(sizeof(Image));  //Aloca memória para a imagem
-  if (image == NULL){                          // Se a alocação de memória para a imagem falhar    
+  Image img = (Image)malloc(sizeof(Image));  //Aloca memória para a imagem
+  if (img == NULL){                          // Se a alocação de memória para a imagem falhar    
     printf("ERRO: A imagem não existe");       // é impressa uma mensagem de erro
     ImageErrMsg();                             //
-    return image;                              // e devolvido o valor NULL
+    return img;                              // e devolvido o valor NULL
   }                                            
 
-  image->width = width;                        //  
-  image->height = height;                      // Atribui width, height e maxval à estrutura da imagem
-  image->maxval = maxval;                      //
+  img->width = width;                        //  
+  img->height = height;                      // Atribui width, height e maxval à estrutura da imagem
+  img->maxval = maxval;                      //
 
-  image->pixel=(uint8*)malloc(sizeof(uint8)*height*width);    //Aloca memória para os pixeis da imagem
+  img->pixel=(uint8*)malloc(sizeof(uint8)*height*width);    //Aloca memória para os pixeis da imagem
   for (int i = 0; i < width*height; i++){                     //
-    image->pixel[i] = 0;                                      //Inicializa todos os pixeis da imagem para a cor preto (0)
+    img->pixel[i] = 0;                                      //Inicializa todos os pixeis da imagem para a cor preto (0)
   }
                                                               
-  return image;                                               
+  return img;                                               
 }
 
 /// Destroy the image pointed to by (*imgp).
@@ -196,12 +196,12 @@ Image ImageCreate(int width, int height, uint8 maxval) {   //---------------- Fu
 /// If (*imgp)==NULL, no operation is performed.
 /// Ensures: (*imgp)==NULL.
 /// Should never fail, and should preserve global errno/errCause.
-void ImageDestroy(Image* image) {
-  assert (image != NULL);
-  if (*image != NULL){  
-    free((*image)->pixel);        //Liberta a memória alocada para os pixeis
-    free(*image);                 //Liberta a memória alocada para a imagem
-    *image = NULL;                //Define o ponteiro para NULL
+void ImageDestroy(Image* img) {                     //---------------- Função escrita dia 12/11/2023
+  assert (img != NULL);
+  if (*img != NULL){  
+    free((*img)->pixel);        //Liberta a memória alocada para os pixeis
+    free(*img);                 //Liberta a memória alocada para a imagem
+    *img = NULL;                //Define o ponteiro para NULL
   }
 }
 
@@ -311,9 +311,23 @@ int ImageMaxval(Image img) { ///
 /// On return,
 /// *min is set to the minimum gray level in the image,
 /// *max is set to the maximum.
-void ImageStats(Image img, uint8* min, uint8* max) { ///
+void ImageStats(Image img, uint8* min, uint8* max) {                      //---------------- Função escrita dia 13/11/2023
   assert (img != NULL);
-  // Insert your code here!
+  *min = img->pixel[0];
+  *max = img->pixel[0];
+  for (uint8 i = 1; i < img->width*img->height; i++){
+    if (img->pixel[i] < *min){
+      *min = img->pixel[i];
+    }
+    else if (img->pixel[i] > *max){
+      
+      *max = img->pixel[i];
+    }
+    
+    if (*min == 0 && *max == img->maxval){
+      return;
+    }
+  }
 }
 
 /// Check if pixel position (x,y) is inside img.
@@ -326,6 +340,10 @@ int ImageValidPos(Image img, int x, int y) { ///
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   // Insert your code here!
+  if (img->width>x && img->height>y){
+    printf("O retangulo esta completamente dentro da imagem.");
+  }
+  
 }
 
 /// Pixel get & set operations
@@ -340,7 +358,8 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 // The returned index must satisfy (0 <= index < img->width*img->height)
 static inline int G(Image img, int x, int y) {
   int index;
-  // Insert your code here!
+  
+  index = x+y*img->width;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -373,9 +392,12 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// Transform image to negative image.
 /// This transforms dark pixels to light pixels and vice-versa,
 /// resulting in a "photographic negative" effect.
-void ImageNegative(Image img) { ///
+void ImageNegative(Image img) {                                             //---------------- Função escrita dia 13/11/2023
   assert (img != NULL);
-  // Insert your code here!
+  
+  for (uint8 i = 0; i < img->width*img->height; i++){
+    img->pixel[i] = PixMax - img->pixel[i];
+  }
 }
 
 /// Apply threshold to image.
