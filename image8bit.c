@@ -313,18 +313,17 @@ int ImageMaxval(Image img) { ///
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) {                      //---------------- Função escrita dia 13/11/2023
   assert (img != NULL);
-  *min = img->pixel[0];
-  *max = img->pixel[0];
-  for (uint8 i = 1; i < img->width*img->height; i++){
-    if (img->pixel[i] < *min){
-      *min = img->pixel[i];
+  *min = img->pixel[0];                                    //define min com o valor do primeiro pixel
+  *max = img->pixel[0];                                    //define max com o valor do primeiro pixel
+  for (long i = 1; i < img->width*img->height; i++){       // percorre todos os pixeis da imagem
+    if (img->pixel[i] < *min){                             //verifica se o valor do pixel é inferior a min
+      *min = img->pixel[i];                                //se a condição se verificar atribui a min o valor do pixel 
     }
-    else if (img->pixel[i] > *max){
-      
-      *max = img->pixel[i];
+    else if (img->pixel[i] > *max){                        //se a condição não se verificar compara se o valor do pixel é superior a max
+      *max = img->pixel[i];                                //se a condição se verificar atribui a max o valor do pixel
     }
     
-    if (*min == 0 && *max == img->maxval){
+    if (*min == 0 && *max == img->maxval){                 //se o min for 0 e max = maxval 
       return;
     }
   }
@@ -359,7 +358,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 static inline int G(Image img, int x, int y) {
   int index;
   
-  index = x+y*img->width;
+  index = x+(y*img->width);               // (44,2) será o pixel[244] se width=100, 44+2*100. Ou seja
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -395,17 +394,24 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 void ImageNegative(Image img) {                                             //---------------- Função escrita dia 13/11/2023
   assert (img != NULL);
   
-  for (uint8 i = 0; i < img->width*img->height; i++){
-    img->pixel[i] = PixMax - img->pixel[i];
+  for (long i = 0; i < img->width*img->height; i++){
+    img->pixel[i] = img->maxval - img->pixel[i];
   }
 }
 
 /// Apply threshold to image.
 /// Transform all pixels with level<thr to black (0) and
 /// all pixels with level>=thr to white (maxval).
-void ImageThreshold(Image img, uint8 thr) { ///
+void ImageThreshold(Image img, uint8 thr) {                                  //---------------- Função escrita dia 15/11/2023
   assert (img != NULL);
-  // Insert your code here!
+  for (long i = 0; i < img->width*img->height; i++){
+    if (img->pixel[i]<thr){
+      img->pixel[i]=0;
+    } else {
+      img->pixel[i]=img->maxval;
+    }
+  }
+  
 }
 
 /// Brighten image by a factor.
