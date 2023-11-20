@@ -448,15 +448,15 @@ void ImageBrighten(Image img, double factor) {                              //--
 /// On success, a new image is returned.
 /// (The caller is responsible for destroying the returned image!)
 /// On failure, returns NULL and errno/errCause are set accordingly.
-Image ImageRotate(Image img) { ///
+Image ImageRotate(Image img) {                                                  //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
-  Image imgRot = ImageCreate(img->width, img->height, img->maxval);      
+  Image imgRot = ImageCreate(img->width, img->height, img->maxval);      //Cria a imagem rodada
   for (long i = 0; i < img->width; i++){
     for (long j = 0; j < img->height; j++){
-      ImageSetPixel(imgRot,j, (imgRot->height-1)-i,ImageGetPixel(img,i,j));
+      ImageSetPixel(imgRot,j, (imgRot->height-1)-i,ImageGetPixel(img,i,j));   //atribui ao pixel (y,altura-x) da iamgem rodada o pixel (x,y) da imagem 1 de modo a gerar a iamgem rodada no sentido anti-horário
     }
   }
-  return imgRot;
+  return imgRot;      //Retorna a imagem rodada
   
 }
 
@@ -467,15 +467,15 @@ Image ImageRotate(Image img) { ///
 /// On success, a new image is returned.
 /// (The caller is responsible for destroying the returned image!)
 /// On failure, returns NULL and errno/errCause are set accordingly.
-Image ImageMirror(Image img) { ///
+Image ImageMirror(Image img) {                                              //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
-  Image imgMirror = ImageCreate(img->width, img->height, img->maxval);      
+  Image imgMirror = ImageCreate(img->width, img->height, img->maxval);       //Cria a imagem espelhada
   for (long i = 0; i < img->width; i++){
     for (long j = 0; j < img->height; j++){
-      ImageSetPixel(imgMirror,i, j,ImageGetPixel(img,(img->width-1)-i,j));
+      ImageSetPixel(imgMirror,i, j,ImageGetPixel(img,(img->width-1)-i,j));      //Atribui ao pixel (x,y) da imagem espelhada o valor do pixel (largura-x, y) da imagem 1 de forma a espelhar a imagem horizontalmente da esquerda para a direita
     }
   }
-  return imgMirror;
+  return imgMirror; //Retorna a imagem espelhada
 }
 
 /// Crop a rectangular subimage from img.
@@ -490,16 +490,16 @@ Image ImageMirror(Image img) { ///
 /// On success, a new image is returned.
 /// (The caller is responsible for destroying the returned image!)
 /// On failure, returns NULL and errno/errCause are set accordingly.
-Image ImageCrop(Image img, int x, int y, int w, int h) { ///
+Image ImageCrop(Image img, int x, int y, int w, int h) {                              //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
-  assert (ImageValidRect(img, x, y, w, h));
-  Image imgCrop = ImageCreate(w,h,img->maxval);
+  assert (ImageValidRect(img, x, y, w, h));                       //Verifica se o recangulo de largura w e altura h está dentro da iamgem 1
+  Image imgCrop = ImageCreate(w,h,img->maxval);                   //Cria uma nova imagem, a imagem cortada
   for (long i = x; i < x+w; i++){
     for (long j = y; j < y+h; j++){
-      ImageSetPixel(imgCrop,i-x,j-y,ImageGetPixel(img, i, j));
+      ImageSetPixel(imgCrop,i-x,j-y,ImageGetPixel(img, i, j));    //atribui à nova imagem os valores correspodentes aos pixies da imagem 1 que estão dentro do retangulo w*h
     } 
   }
-  return imgCrop;
+  return imgCrop;   //Retorna a imagem cortada
 }
 
 
@@ -509,10 +509,10 @@ Image ImageCrop(Image img, int x, int y, int w, int h) { ///
 /// Paste img2 into position (x, y) of img1.
 /// This modifies img1 in-place: no allocation involved.
 /// Requires: img2 must fit inside img1 at position (x, y).
-void ImagePaste(Image img1, int x, int y, Image img2) { ///
+void ImagePaste(Image img1, int x, int y, Image img2) {                  //---------------- Função escrita dia 18/11/2023
   assert (img1 != NULL);
   assert (img2 != NULL);
-  assert (ImageValidRect(img1, x, y, img2->width, img2->height));
+  assert (ImageValidRect(img1, x, y, img2->width, img2->height));     //Verifica se a imagem 2 está dentro da imagem 1
   for (long i = x; i < x+img2->width; i++){
     for (long j = y; j < y+img2->height; j++){
       ImageSetPixel(img1, i, j,ImageGetPixel(img2,i-x, j-y));     //Substitui os pixeis da imagem 1 pelos da iamgem 2 no retangulo com o tamanho da imagem 2 e origem e (x,y)
@@ -529,7 +529,7 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
 void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
-  assert (ImageValidRect(img1, x, y, img2->width, img2->height));
+  assert (ImageValidRect(img1, x, y, img2->width, img2->height));     //Verifica se a iamgem 2 está dentro da imagem 1
   for (long i = x; i < x+img2->width; i++){
     for (long j = y; j < y+img2->height; j++){
       double img1Pixel = ImageGetPixel(img1, i, j); //Armazena o pixel da imagem 1
@@ -543,10 +543,10 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
 /// Compare an image to a subimage of a larger image.
 /// Returns 1 (true) if img2 matches subimage of img1 at pos (x, y).
 /// Returns 0, otherwise.
-int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
+int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                            //---------------- Função escrita dia 18/11/2023
   assert (img1 != NULL);
   assert (img2 != NULL);
-  assert (ImageValidPos(img1, x, y));
+  assert (ImageValidPos(img1, x, y));                       //Verifica se o pizel na posição (x,y) está dentro da iamgem 1       
   for (long i = x; i < x+img2->width; i++){
     for (long j = y; j < y+img2->height; j++){
       double img1Pixel = ImageGetPixel(img1, i, j); //Armazena o pixel da imagem 1
@@ -563,31 +563,31 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
 /// Searches for img2 inside img1.
 /// If a match is found, returns 1 and matching position is set in vars (*px, *py).
 /// If no match is found, returns 0 and (*px, *py) are left untouched.
-int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
+int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {                         //---------------- Função escrita dia 19/11/2023
   assert (img1 != NULL);
   assert (img2 != NULL);
   for (long i = 0; i <= img1->width - img2->width; i++){
     for (long j = 0; j <= img1->height - img2->height; j++){
-      int match = 1;
+      int match = 1;            //Variavel que permite perceber se os pixies coincidem. Inicialmente atribuida com o valor verdadeiro.
       for (long t = 0; t < img2->width; t++){
         for (long k = 0; k < img2->height; k++){
-          if (ImageGetPixel(img1, i+t, j+k) != ImageGetPixel(img2, t, k)){
-            match = 0;
-            break;
+          if (ImageGetPixel(img1, i+t, j+k) != ImageGetPixel(img2, t, k)){    //Verifica de os pixeis são diferentes
+            match = 0;                                  //Se os pixeis forem diferentes match passa a zero
+            break;                                      //e o ciclo é interrompido
           }
         }
-        if (match == 0){
+        if (match == 0){                                //Permite interromper o ciclo se os pixeis nao coincidirem
           break;
         }
       }
-      if (match == 1){
-        *px = i;
-        *py = j;
-        return 1;
+      if (match == 1){                                //Se os pixies coincidirem, match continua a ser 1 (verdadeiro)
+        *px = i;                                      //Atribui as coordenadas x a *px
+        *py = j;                                      //Atibui as coordenadas y a *py
+        return 1;                                     //Retorna 1;
       }
     }
   }
-  return 0;
+  return 0;                                           //Caso não haja uma subimagem 2 na imagem 1 retorna 0;
 }
 
 
@@ -597,37 +597,37 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
-void ImageBlur(Image img, int dx, int dy) { ///
+void ImageBlur(Image img, int dx, int dy) {                                            //---------------- Função escrita dia 19/11/2023
   assert(img != NULL);
-  double sum;
-  int cont;
-  Image img2 = ImageCreate(img->width, img->height, img->maxval);
+  double sum;                 //Variável que vai somar o valor dos pixeis da imagem 2
+  int cont;                   //Contador
+  Image img2 = ImageCreate(img->width, img->height, img->maxval);     //Cria uma nova imagem igual à primeira onde se irá buscar o valor dos pixeis uma vez que os da imagem 1 serão alterados
   for (int i = 0; i < img->width*img->height; i++){
-    img2->pixel[i]=img->pixel[i];
+    img2->pixel[i]=img->pixel[i];                                     //copia os valores dos pixeis da imagem 1 para os da imagem 2
   }
   
   for (long i = 0; i < img->width; i++){
     for (long j = 0; j < img->height; j++){
-      sum = 0;
-      cont = 0;
+      sum = 0;                                        //Reinicia o sum
+      cont = 0;                                       //Reinicia o contador
       for (long t = i-dx; t <= i+dx; t++){
-        if (t<0 || t>=img->width){
-          continue;
+        if (t<0 || t>=img->width){                    //Verifica se a coordenada x da imagem 2 está demtro da imagem 1
+          continue;                                   //Se sim continua
         }
         
-        for (long k = j-dy; k <= j+dy; k++){
-          if (k<0 || k >= img->height){
-            continue;
+        for (long k = j-dy; k <= j+dy; k++){  
+          if (k<0 || k >= img->height){               //Verifica se a coordenada y da imagem 2 está demtro da imagem 1
+            continue;                                 //Se sim continua
           }
           
-          sum += ImageGetPixel(img2, t, k);
-          cont++;
+          sum += ImageGetPixel(img2, t, k);           //Soma o valor do pixel da imagem 2 na coordenadas (t,k)
+          cont++;                                     //incrementa 1 valor ao contador
         }
       }
-      int meanFilter =(int)((sum/cont) + 0.5);
-      ImageSetPixel(img, i, j, meanFilter);
+      int meanFilter =(int)((sum/cont) + 0.5);        // Cria o meanFilter e atribui-lhe o devido valor
+      ImageSetPixel(img, i, j, meanFilter);           //Substitui o pixel original da imagem 1 pelo pixel com o novo valor depois de aplicado o meanFilter
     }
   }
-    ImageDestroy(&img2);
+    ImageDestroy(&img2);                              //Destrói a imagem 2
 }
 
