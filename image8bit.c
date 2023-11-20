@@ -450,10 +450,10 @@ void ImageBrighten(Image img, double factor) {                              //--
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageRotate(Image img) {                                                  //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
-  Image imgRot = ImageCreate(img->width, img->height, img->maxval);      //Cria a imagem rodada
-  for (long i = 0; i < img->width; i++){
-    for (long j = 0; j < img->height; j++){
-      ImageSetPixel(imgRot,j, (imgRot->height-1)-i,ImageGetPixel(img,i,j));   //atribui ao pixel (y,altura-x) da iamgem rodada o pixel (x,y) da imagem 1 de modo a gerar a iamgem rodada no sentido anti-horário
+  Image imgRot = ImageCreate(img->height, img->width, img->maxval);      //Cria a imagem rodada (width = img->height e heigh = img->width)
+  for (int j = 0; j < img->height; j++){
+    for (int i = 0; i < img->width; i++){
+      ImageSetPixel(imgRot,j, ((imgRot->height-1)-i),ImageGetPixel(img,i,j));   //atribui ao pixel (y,altura-x) da imagem rodada o pixel (x,y) da imagem 1 de modo a gerar a imagem rodada no sentido anti-horário
     }
   }
   return imgRot;      //Retorna a imagem rodada
@@ -470,8 +470,8 @@ Image ImageRotate(Image img) {                                                  
 Image ImageMirror(Image img) {                                              //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
   Image imgMirror = ImageCreate(img->width, img->height, img->maxval);       //Cria a imagem espelhada
-  for (long i = 0; i < img->width; i++){
-    for (long j = 0; j < img->height; j++){
+  for (int j = 0; j < img->height; j++){
+    for (int i = 0; i < img->width; i++){
       ImageSetPixel(imgMirror,i, j,ImageGetPixel(img,(img->width-1)-i,j));      //Atribui ao pixel (x,y) da imagem espelhada o valor do pixel (largura-x, y) da imagem 1 de forma a espelhar a imagem horizontalmente da esquerda para a direita
     }
   }
@@ -494,8 +494,8 @@ Image ImageCrop(Image img, int x, int y, int w, int h) {                        
   assert (img != NULL);
   assert (ImageValidRect(img, x, y, w, h));                       //Verifica se o recangulo de largura w e altura h está dentro da iamgem 1
   Image imgCrop = ImageCreate(w,h,img->maxval);                   //Cria uma nova imagem, a imagem cortada
-  for (long i = x; i < x+w; i++){
-    for (long j = y; j < y+h; j++){
+  for (int j = y; j < y+h; j++){
+    for (int i = x; i < x+w; i++){
       ImageSetPixel(imgCrop,i-x,j-y,ImageGetPixel(img, i, j));    //atribui à nova imagem os valores correspodentes aos pixies da imagem 1 que estão dentro do retangulo w*h
     } 
   }
@@ -513,8 +513,8 @@ void ImagePaste(Image img1, int x, int y, Image img2) {                  //-----
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));     //Verifica se a imagem 2 está dentro da imagem 1
-  for (long i = x; i < x+img2->width; i++){
-    for (long j = y; j < y+img2->height; j++){
+  for (int j = y; j < y+img2->height; j++){
+    for (int i = x; i < x+img2->width; i++){
       ImageSetPixel(img1, i, j,ImageGetPixel(img2,i-x, j-y));     //Substitui os pixeis da imagem 1 pelos da iamgem 2 no retangulo com o tamanho da imagem 2 e origem e (x,y)
     }
   }  
@@ -530,8 +530,8 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));     //Verifica se a iamgem 2 está dentro da imagem 1
-  for (long i = x; i < x+img2->width; i++){
-    for (long j = y; j < y+img2->height; j++){
+  for (int j = y; j < y+img2->height; j++){
+    for (int i = x; i < x+img2->width; i++){
       double img1Pixel = ImageGetPixel(img1, i, j); //Armazena o pixel da imagem 1
       double img2Pixel = ImageGetPixel(img2, i-x, j-y); //Armazena o pixel da imagem 2
       double blendPixel = (int)((1.0-alpha)*img1Pixel + img2Pixel*alpha + 0.5); //Faz o blend dos pixeis de ambas as imagens
@@ -547,8 +547,8 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                  
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));                       //Verifica se o pizel na posição (x,y) está dentro da iamgem 1       
-  for (long i = x; i < x+img2->width; i++){
-    for (long j = y; j < y+img2->height; j++){
+  for (int j = y; j < y+img2->height; j++){
+    for (int i = x; i < x+img2->width; i++){
       double img1Pixel = ImageGetPixel(img1, i, j); //Armazena o pixel da imagem 1
       double img2Pixel = ImageGetPixel(img2, i-x, j-y); //Armazena o pixel da imagem 2
       if (img1Pixel!=img2Pixel){  //Verifica se os pixeis são diferentes
@@ -566,8 +566,8 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                  
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {                         //---------------- Função escrita dia 19/11/2023
   assert (img1 != NULL);
   assert (img2 != NULL);
-  for (long i = 0; i <= img1->width - img2->width; i++){
-    for (long j = 0; j <= img1->height - img2->height; j++){
+  for (int j = 0; j <= img1->height - img2->height; j++){
+    for (int i = 0; i <= img1->width - img2->width; i++){
       int match = 1;            //Variavel que permite perceber se os pixies coincidem. Inicialmente atribuida com o valor verdadeiro.
       for (long t = 0; t < img2->width; t++){
         for (long k = 0; k < img2->height; k++){
@@ -602,21 +602,21 @@ void ImageBlur(Image img, int dx, int dy) {                                     
   double sum;                 //Variável que vai somar o valor dos pixeis da imagem 2
   int cont;                   //Contador
   Image img2 = ImageCreate(img->width, img->height, img->maxval);     //Cria uma nova imagem igual à primeira onde se irá buscar o valor dos pixeis uma vez que os da imagem 1 serão alterados
-  for (int i = 0; i < img->width*img->height; i++){
+  for (long i = 0; i < img->width*img->height; i++){
     img2->pixel[i]=img->pixel[i];                                     //copia os valores dos pixeis da imagem 1 para os da imagem 2
   }
   
-  for (long i = 0; i < img->width; i++){
-    for (long j = 0; j < img->height; j++){
+  for (int j = 0; j < img->height; j++){
+    for (int i = 0; i < img->width; i++){
       sum = 0;                                        //Reinicia o sum
       cont = 0;                                       //Reinicia o contador
-      for (long t = i-dx; t <= i+dx; t++){
-        if (t<0 || t>=img->width){                    //Verifica se a coordenada x da imagem 2 está demtro da imagem 1
+      for (int k = j-dy; k <= j+dy; k++){
+        if (k<0 || k >= img->height){                    //Verifica se a coordenada x da imagem 2 está dentro da imagem 1
           continue;                                   //Se sim continua
         }
         
-        for (long k = j-dy; k <= j+dy; k++){  
-          if (k<0 || k >= img->height){               //Verifica se a coordenada y da imagem 2 está demtro da imagem 1
+        for (int t = i-dx; t <= i+dx; t++){  
+          if (t<0 || t>=img->width){               //Verifica se a coordenada y da imagem 2 está dentro da imagem 1
             continue;                                 //Se sim continua
           }
           
