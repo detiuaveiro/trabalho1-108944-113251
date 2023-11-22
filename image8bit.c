@@ -566,23 +566,11 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                  
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {                         //---------------- Função escrita dia 19/11/2023
   assert (img1 != NULL);
   assert (img2 != NULL);
-  for (int j = 0; j <= img1->height - img2->height; j++){
-    for (int i = 0; i <= img1->width - img2->width; i++){
-      int match = 1;            //Variavel que permite perceber se os pixies coincidem. Inicialmente atribuida com o valor verdadeiro.
-      for (long t = 0; t < img2->width; t++){
-        for (long k = 0; k < img2->height; k++){
-          if (ImageGetPixel(img1, i+t, j+k) != ImageGetPixel(img2, t, k)){    //Verifica de os pixeis são diferentes
-            match = 0;                                  //Se os pixeis forem diferentes match passa a zero
-            break;                                      //e o ciclo é interrompido
-          }
-        }
-        if (match == 0){                                //Permite interromper o ciclo se os pixeis nao coincidirem
-          break;
-        }
-      }
-      if (match == 1){                                //Se os pixies coincidirem, match continua a ser 1 (verdadeiro)
+  for (int j = 0; j <= img1->height - img2->height; j++){               //Corre as colunas
+    for (int i = 0; i <= img1->width - img2->width; i++){               //Corre as linhas
+      if (ImageMatchSubImage(img1, i, j, img2)){      //Se os pixeis coincidirem:                              
         *px = i;                                      //Atribui as coordenadas x a *px
-        *py = j;                                      //Atibui as coordenadas y a *py
+        *py = j;                                      //Atibui as coordenadas y a *py                                
         return 1;                                     //Retorna 1;
       }
     }
