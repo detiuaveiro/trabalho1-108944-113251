@@ -172,7 +172,7 @@ Image ImageCreate(int width, int height, uint8 maxval) {   //---------------- Fu
   assert (width >= 0);
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
-  Image img = (Image)malloc(sizeof(Image));  //Aloca memória para a imagem
+  Image img = (Image)malloc(sizeof(struct image));  //Aloca memória para a imagem
   if (img == NULL){                          // Se a alocação de memória para a imagem falhar    
     printf("ERRO: A imagem não existe");       // é impressa uma mensagem de erro
     ImageErrMsg();                             //
@@ -566,7 +566,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                  
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {                         //---------------- Função escrita dia 19/11/2023
   assert (img1 != NULL);
   assert (img2 != NULL);
-  int comparacoes = 0;
+
   for (int j = 0; j <= img1->height - img2->height; j++){               //Percorre as colunas
     for (int i = 0; i <= img1->width - img2->width; i++){               //Percorre as linhas
       if (ImageMatchSubImage(img1, i, j, img2)){      //Se os pixeis coincidirem:                              
