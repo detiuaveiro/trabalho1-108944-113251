@@ -315,7 +315,7 @@ void ImageStats(Image img, uint8* min, uint8* max) {                      //----
   assert (img != NULL);
   *min = img->pixel[0];                                    //define min com o valor do primeiro pixel
   *max = img->pixel[0];                                    //define max com o valor do primeiro pixel
-  for (long i = 1; i < img->width*img->height; i++){       // percorre todos os pixeis da imagem
+  for (long i = 0; i < img->width*img->height; i++){       // percorre todos os pixeis da imagem
     if (img->pixel[i] < *min){                             //verifica se o valor do pixel é inferior a min
       *min = img->pixel[i];                                //se a condição se verificar atribui a min o valor do pixel 
     }
@@ -389,7 +389,7 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// resulting in a "photographic negative" effect.
 void ImageNegative(Image img) {                                             //---------------- Função escrita dia 13/11/2023
   assert (img != NULL);
-  for (long i = 0; i < img->width*img->height; i++){
+  for (long i = 0; i < img->width*img->height; i++){    //Percorre todos os pixeis da imagem
     img->pixel[i] = img->maxval - img->pixel[i];     //Subtrai ao maxval o valor do pixel obtendo assim o valor novo para o efeito negativo 
   }
 }
@@ -399,7 +399,7 @@ void ImageNegative(Image img) {                                             //--
 /// all pixels with level>=thr to white (maxval).
 void ImageThreshold(Image img, uint8 thr) {                                  //---------------- Função escrita dia 15/11/2023
   assert (img != NULL);
-  for (long i = 0; i < img->width*img->height; i++){
+  for (long i = 0; i < img->width*img->height; i++){           //Percorre todos os pixeis da imagem
     if (img->pixel[i]<thr){                                    //Verifica se o valor do pixel é menor que o valor thr
       img->pixel[i]=0;                                         //Se for transforma o pixel num pixel preto             
     } else {
@@ -415,7 +415,7 @@ void ImageThreshold(Image img, uint8 thr) {                                  //-
 void ImageBrighten(Image img, double factor) {                              //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
   assert (factor >= 0.0);                               //garante que o factor usado não é negativo (o que invertiria as cores da imagem)
-  for (long i = 0; i < img->width*img->height; i++){
+  for (long i = 0; i < img->width*img->height; i++){                //Percorre todos os pixeis da imagem
     int NovoValorPixel = img->pixel[i]*factor+0.5;                 //Multplicação do valor de cada pixel pelo factor
     if (NovoValorPixel > img->maxval){                        //Verifica que o novo valor do pixel não excede o valor máximo maxval
       img->pixel[i] = img->maxval;                             //Se exceder então o valor no novo pixel será maxval
@@ -451,8 +451,8 @@ void ImageBrighten(Image img, double factor) {                              //--
 Image ImageRotate(Image img) {                                                  //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
   Image imgRot = ImageCreate(img->height, img->width, img->maxval);      //Cria a imagem rodada (width = img->height e heigh = img->width)
-  for (int j = 0; j < img->height; j++){
-    for (int i = 0; i < img->width; i++){
+  for (int j = 0; j < img->height; j++){                                //Percorre as colunas
+    for (int i = 0; i < img->width; i++){                               //Percorre as linhas
       ImageSetPixel(imgRot,j, ((imgRot->height-1)-i),ImageGetPixel(img,i,j));   //atribui ao pixel (y,altura-x) da imagem rodada o pixel (x,y) da imagem 1 de modo a gerar a imagem rodada no sentido anti-horário
     }
   }
@@ -470,8 +470,8 @@ Image ImageRotate(Image img) {                                                  
 Image ImageMirror(Image img) {                                              //---------------- Função escrita dia 18/11/2023
   assert (img != NULL);
   Image imgMirror = ImageCreate(img->width, img->height, img->maxval);       //Cria a imagem espelhada
-  for (int j = 0; j < img->height; j++){
-    for (int i = 0; i < img->width; i++){
+  for (int j = 0; j < img->height; j++){                                     //Percorre as colunas
+    for (int i = 0; i < img->width; i++){                                    //Percorre as linhas
       ImageSetPixel(imgMirror,i, j,ImageGetPixel(img,(img->width-1)-i,j));      //Atribui ao pixel (x,y) da imagem espelhada o valor do pixel (largura-x, y) da imagem 1 de forma a espelhar a imagem horizontalmente da esquerda para a direita
     }
   }
@@ -494,8 +494,8 @@ Image ImageCrop(Image img, int x, int y, int w, int h) {                        
   assert (img != NULL);
   assert (ImageValidRect(img, x, y, w, h));                       //Verifica se o recangulo de largura w e altura h está dentro da iamgem 1
   Image imgCrop = ImageCreate(w,h,img->maxval);                   //Cria uma nova imagem, a imagem cortada
-  for (int j = y; j < y+h; j++){
-    for (int i = x; i < x+w; i++){
+  for (int j = y; j < y+h; j++){                                  //Percorre as colunas
+    for (int i = x; i < x+w; i++){                                //Percorre as linhas
       ImageSetPixel(imgCrop,i-x,j-y,ImageGetPixel(img, i, j));    //atribui à nova imagem os valores correspodentes aos pixies da imagem 1 que estão dentro do retangulo w*h
     } 
   }
@@ -513,8 +513,8 @@ void ImagePaste(Image img1, int x, int y, Image img2) {                  //-----
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));     //Verifica se a imagem 2 está dentro da imagem 1
-  for (int j = y; j < y+img2->height; j++){
-    for (int i = x; i < x+img2->width; i++){
+  for (int j = y; j < y+img2->height; j++){                 //Percorre as colunas
+    for (int i = x; i < x+img2->width; i++){                //Percorre as linhas
       ImageSetPixel(img1, i, j,ImageGetPixel(img2,i-x, j-y));     //Substitui os pixeis da imagem 1 pelos da iamgem 2 no retangulo com o tamanho da imagem 2 e origem e (x,y)
     }
   }  
@@ -530,8 +530,8 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));     //Verifica se a iamgem 2 está dentro da imagem 1
-  for (int j = y; j < y+img2->height; j++){
-    for (int i = x; i < x+img2->width; i++){
+  for (int j = y; j < y+img2->height; j++){           //Percorre as colunas
+    for (int i = x; i < x+img2->width; i++){          //Percorre as linhas
       double img1Pixel = ImageGetPixel(img1, i, j); //Armazena o pixel da imagem 1
       double img2Pixel = ImageGetPixel(img2, i-x, j-y); //Armazena o pixel da imagem 2
       double blendPixel = (int)((1.0-alpha)*img1Pixel + img2Pixel*alpha + 0.5); //Faz o blend dos pixeis de ambas as imagens
@@ -547,8 +547,8 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                  
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));                       //Verifica se o pizel na posição (x,y) está dentro da iamgem 1       
-  for (int j = y; j < y+img2->height; j++){
-    for (int i = x; i < x+img2->width; i++){
+  for (int j = y; j < y+img2->height; j++){            //Percorre as colunas
+    for (int i = x; i < x+img2->width; i++){           //Percorre as linhas
       double img1Pixel = ImageGetPixel(img1, i, j); //Armazena o pixel da imagem 1
       double img2Pixel = ImageGetPixel(img2, i-x, j-y); //Armazena o pixel da imagem 2
       if (img1Pixel!=img2Pixel){  //Verifica se os pixeis são diferentes
@@ -566,15 +566,16 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                  
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {                         //---------------- Função escrita dia 19/11/2023
   assert (img1 != NULL);
   assert (img2 != NULL);
-  for (int j = 0; j <= img1->height - img2->height; j++){               //Corre as colunas
-    for (int i = 0; i <= img1->width - img2->width; i++){               //Corre as linhas
+  int comparacoes = 0;
+  for (int j = 0; j <= img1->height - img2->height; j++){               //Percorre as colunas
+    for (int i = 0; i <= img1->width - img2->width; i++){               //Percorre as linhas
       if (ImageMatchSubImage(img1, i, j, img2)){      //Se os pixeis coincidirem:                              
         *px = i;                                      //Atribui as coordenadas x a *px
-        *py = j;                                      //Atibui as coordenadas y a *py                                
+        *py = j;                                      //Atribui as coordenadas y a *py                               
         return 1;                                     //Retorna 1;
       }
     }
-  }
+  } 
   return 0;                                           //Caso não haja uma subimagem 2 na imagem 1 retorna 0;
 }
 
@@ -590,12 +591,14 @@ void ImageBlur(Image img, int dx, int dy) {                                     
   double sum;                 //Variável que vai somar o valor dos pixeis da imagem 2
   int cont;                   //Contador
   Image img2 = ImageCreate(img->width, img->height, img->maxval);     //Cria uma nova imagem igual à primeira onde se irá buscar o valor dos pixeis uma vez que os da imagem 1 serão alterados
+  
+  
   for (long i = 0; i < img->width*img->height; i++){
     img2->pixel[i]=img->pixel[i];                                     //copia os valores dos pixeis da imagem 1 para os da imagem 2
   }
   
-  for (int j = 0; j < img->height; j++){
-    for (int i = 0; i < img->width; i++){
+  for (int j = 0; j < img->height; j++){              //Percorre as colunas
+    for (int i = 0; i < img->width; i++){             //Percorre as linhas
       sum = 0;                                        //Reinicia o sum
       cont = 0;                                       //Reinicia o contador
       for (int k = j-dy; k <= j+dy; k++){
