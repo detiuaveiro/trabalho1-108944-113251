@@ -23,6 +23,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "instrumentation.h"
 
@@ -586,6 +587,7 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {             
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
+
 void ImageBlur(Image img, int dx, int dy) {                                            //---------------- Função escrita dia 19/11/2023
   assert(img != NULL);
   double sum;                 //Variável que vai somar o valor dos pixeis da imagem 2
@@ -621,4 +623,29 @@ void ImageBlur(Image img, int dx, int dy) {                                     
   }
     ImageDestroy(&img2);                              //Destrói a imagem 2
 }
+
+void ImageBlurMelhorado(Image img, int dx, int dy) {         ///Versão melhorada da função Blur ---- Escrita dia 24
+   assert(img != NULL);
+
+   uint8* original = malloc(img->width * img->height * sizeof(uint8));        // Aloca memória para uma cópia da imagem original
+   memcpy(original, img->pixel, img->width * img->height * sizeof(uint8));    // copia os dados dos pixeis para a variável original --- memcpy(void *to, const void *from, size_t numBytes);
+   for (int j = 0; j < img->height; j++) {          //Percorre as colunas
+       for (int i = 0; i < img->width; i++) {       //Percorre as linhas
+           double sum = 0;
+           int count = 0;
+           for (int k = -dy; k <= dy; k++) {
+               for (int t = -dx; t <= dx; t++) {
+                if ((i+t >= 0 && i+t < img->width) && (j+k >= 0 && j+k < img->height)){
+                  sum += original[(int)((j + k) * img->width) + (int)(i + t)];        //Soma o valor dos pixeis na coordenadas (t,k)
+                  count++;                                                //incrementa 1 valor ao contador
+                }
+               }
+           }
+           img->pixel[j * img->width + i] = (int)((sum/count)+0.5);
+       }
+   }
+
+   free(original); //Liberta a memória alocada para a imagem original
+}
+
 
