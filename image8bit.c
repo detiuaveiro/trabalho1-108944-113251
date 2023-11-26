@@ -147,13 +147,14 @@ static int check(int condition, const char* failmsg) {
 void ImageInit(void) { ///
   InstrCalibrate();
   InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
-  // Name other counters here...
+  InstrName[1] = "LocCount"; // InstrCount[0] vai contar LocateSubimages
   
 }
 
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
-// Add more macros here...
+#define LocateCompar InstrCount[1]
+
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
 
@@ -552,6 +553,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) {                  
     for (int i = x; i < x+img2->width; i++){           //Percorre as linhas
       double img1Pixel = ImageGetPixel(img1, i, j); //Armazena o pixel da imagem 1
       double img2Pixel = ImageGetPixel(img2, i-x, j-y); //Armazena o pixel da imagem 2
+      LocateCompar++;     // variável contadora para incrementar sempre que compare 
       if (img1Pixel!=img2Pixel){  //Verifica se os pixeis são diferentes
         return 0;                 //Se os pixeis forem diferentes retorna 0
       }
@@ -570,6 +572,7 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {             
 
   for (int j = 0; j <= img1->height - img2->height; j++){               //Percorre as colunas
     for (int i = 0; i <= img1->width - img2->width; i++){               //Percorre as linhas
+      LocateCompar++;                          // Variável contadora para numero de comparações
       if (ImageMatchSubImage(img1, i, j, img2)){      //Se os pixeis coincidirem:                              
         *px = i;                                      //Atribui as coordenadas x a *px
         *py = j;                                      //Atribui as coordenadas y a *py                               
